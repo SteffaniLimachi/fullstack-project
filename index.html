@@ -5,64 +5,228 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Task Manager</title>
     <style>
-        body{
-            font-family: Arial, sans-serif;
-            padding: 30px;
-            background-color: #f4f4f4;
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
-        h1{
+
+        body {
+            font-family: 'Georgia', serif;
+            background-color: #eef1f7;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 50px 20px;
+        }
+
+        .container {
+            background-color: #ffffff;
+            width: 100%;
+            max-width: 620px;
+            border-radius: 4px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background-color: #1a3a5c;
+            padding: 28px 32px;
+            border-bottom: 4px solid #c9a84c;
+        }
+
+        .header h1 {
+            color: #ffffff;
+            font-size: 22px;
+            font-weight: normal;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .header p {
+            color: #a8bdd1;
+            font-size: 13px;
+            margin-top: 4px;
+            font-style: italic;
+        }
+
+        .body {
+            padding: 32px;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 10px;
+            position: relative;
+        }
+
+        input {
+            flex: 1;
+            padding: 10px 14px;
+            border: 1px solid #b0bec5;
+            border-radius: 3px;
+            font-family: 'Georgia', serif;
+            font-size: 14px;
             color: #333;
-            margin-bottom: 20px;
+            outline: none;
+            transition: border-color 0.2s;
         }
-        input{
-            padding: 10px;
-            width: 250px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
+
+        input:focus {
+            border-color: #1a3a5c;
         }
-        button{
-            padding: 10px 15px;
-            margin-left: 10px;
-            background-color: #007bff;
+
+        button {
+            padding: 10px 18px;
+            background-color: #1a3a5c;
             color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: 3px;
+            font-family: 'Georgia', serif;
+            font-size: 14px;
             cursor: pointer;
+            letter-spacing: 0.5px;
+            transition: background-color 0.2s;
+            white-space: nowrap;
         }
-        button:hover{
-            background-color: #0056b3;
+
+        button:hover {
+            background-color: #c9a84c;
         }
-        ul{
+
+        .divider {
+            border: none;
+            border-top: 1px solid #e0e6ed;
+            margin: 24px 0 16px;
+        }
+
+        .list-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: #7a8fa6;
+            margin-bottom: 12px;
+        }
+
+        ul {
             list-style-type: none;
             padding: 0;
-            margin-top: 20px;
         }
-        li{
-            background-color: white;
-            padding: 12px;
-            margin-bottom: 10px;
-            border-radius: 6px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+
+        li {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background-color: #f7f9fc;
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            border-radius: 3px;
+            border-left: 3px solid #1a3a5c;
+            font-size: 14px;
+            color: #2c3e50;
+            cursor: pointer;
+            transition: background-color 0.2s, border-color 0.2s;
         }
+
+        li:hover {
+            background-color: #fdecea;
+            border-left-color: #c0392b;
+            color: #c0392b;
+        }
+
+        li::before {
+            content: '✕';
+            font-size: 11px;
+            opacity: 0;
+            transition: opacity 0.2s;
+            color: #c0392b;
+        }
+
+        li:hover::before {
+            opacity: 1;
+        }
+
+       #popup {
+            display: none;
+            position: absolute;
+            top: calc(100% + 8px);  /* debajo del contenedor */
+            left: 0;                 /* alineado a la izquierda */
+            transform: none;         /* quitar el centrado vertical */
+            background-color: #c0392b;
+            color: white;
+            padding: 8px 14px;
+            border-radius: 3px;
+            font-size: 13px;
+            font-family: 'Georgia', serif;
+            white-space: nowrap;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+            z-index: 10;
+        }
+
+        /* la flecha apunta hacia arriba */
+        #popup::before {
+            content: '';
+            position: absolute;
+            bottom: 100%;            /* encima del popup */
+            left: 20px;              /* alineada al inicio */
+            transform: none;
+            border: 6px solid transparent;
+            border-bottom-color: #c0392b;  /* flecha hacia arriba */
+        }
+        
     </style>
 </head>
 <body>
+<div class="container">
 
-    <h1>Task Manager</h1>
+    <div class="header">
+        <h1>Task Manager</h1>
+        <!--<p>Registro y seguimiento de actividades académicas</p>-->
+    </div>
 
-    <input type="text" id="taskInput" placeholder="Escribe una nueva tarea"> <!-- ID para JS-->
+    <div class="body">
+        <div class="input-row">
+            <input type="text" id="taskInput" placeholder="Escribe una nueva tarea">
+            <button id="addTaskBtn">Agregar Tarea</button>
+            <div id="popup">⚠️ Ingrese una tarea válida.</div>
+        </div>
 
-    <button id="addTaskBtn">Agregar Tarea</button> <!-- ID para JS -->
+        <hr class="divider">
+        <p class="list-label">Tareas registradas</p>
 
-    <ul id="taskList"> <!-- Lista donde aparecerán las tareas -->
-        <li>Estudiar JavaScript</li> <!-- Ejemplo -->
-    </ul> 
+        <ul id="taskList"></ul>
+    </div>
+</div>
 
 <script>
     const input = document.querySelector('#taskInput'); // id input para JS
     const button = document.querySelector('#addTaskBtn');
     const list = document.querySelector('#taskList');
-    button.addEventListener('click', () =>{});
+    const popup = document.querySelector('#popup');
+
+    button.addEventListener('click', () =>{
+        const texto = input.value.trim();
+
+        if (texto === '') {
+            popup.style.display = 'block';
+            setTimeout(() => {
+                popup.style.display = 'none';
+            }, 2000); // desaparece después de 2 segundos
+            return;
+        }
+
+        const li = document.createElement('li');
+        li.textContent = texto;
+        li.style.cursor = 'pointer'; // indica que es clickeable
+        li.addEventListener('click', () => {
+            list.removeChild(li);
+        });
+        list.appendChild(li);
+
+        input.value = '';
+        input.focus();
+    });
 </script>
 
 </body>
